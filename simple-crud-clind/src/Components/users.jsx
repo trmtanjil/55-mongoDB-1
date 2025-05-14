@@ -1,4 +1,5 @@
 import { use, useState } from "react";
+import { Link } from "react-router";
 
 function Users({usersPromiss}) {
  
@@ -39,14 +40,20 @@ const handleDelet =(id)=>{
     fetch( `http://localhost:5000/users/${id}`,{
         method:'DELETE'
     })
-    .then(res=>res.json())
-    .then(data=>{
-        console.log('after delet ', data)
+    .then(res =>res.json())
+    .then(data =>{
+          if(data.deletedCount){
+            const remainingUsers = users.filter(user=> user._id !== id );
+            setUsers(remainingUsers)
+            console.log(remainingUsers)
+            console.log('after delete ', data)
+        }
     })
 }
   return (
     <div>
         <div>
+            <h1>Length : {users.length}</h1>
             <form onSubmit={hadleusercreat}>
                 <input className='input my-4' type="text" name='name' placeholder='name' /><br />
                 <input className='input' type="email" name='email' placeholder='email' /><br />
@@ -56,6 +63,13 @@ const handleDelet =(id)=>{
         <div>
             {
                 users.map(user=><p className="border border-amber-100 m-10 rounded-xl p-3">{user.name} : {user.email}
+
+                    <Link className="btn ml-3" to={`/users/${user._id}`}>Details</Link>
+                    <Link className="btn ml-3" to={`/edituser/${user._id}`}>
+                    Edit
+                    </Link>
+
+
                 <button className=" ml-5 btn" onClick={()=>handleDelet(user._id)}>x</button>
                 </p>)
             }
